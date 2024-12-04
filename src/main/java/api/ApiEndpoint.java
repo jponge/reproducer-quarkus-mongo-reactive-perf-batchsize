@@ -50,4 +50,11 @@ public class ApiEndpoint {
     public Uni<List<Message>> asyncFetch() {
         return messageService.fetchAllAsync();
     }
+
+    @GET
+    @Path("async/all-bad")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<List<Message>> asyncFetchButBadly() {
+        return messageService.fetchAllAsyncButBadly();
+    }
 }

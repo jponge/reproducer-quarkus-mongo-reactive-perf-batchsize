@@ -46,11 +46,22 @@ public class MessageService {
 
     public Uni<List<Message>> fetchAllAsync() {
         long start = System.currentTimeMillis();
-        logger.info("Fetching all messages asynchronously");
+        logger.info("Fetching all messages asynchronously with batching");
         return reactiveMongoClient
                 .getDatabase(DB_NAME)
                 .getCollection(COLLECTION_NAME, Message.class)
                 .find(new FindOptions().batchSize(4096))
+                .collect().asList()
+                .onItem().invoke(messages -> logger.info(messages.size() + " messages fetched in " + (System.currentTimeMillis() - start) + "ms"));
+    }
+
+    public Uni<List<Message>> fetchAllAsyncButBadly() {
+        long start = System.currentTimeMillis();
+        logger.info("Fetching all messages asynchronously without batching");
+        return reactiveMongoClient
+                .getDatabase(DB_NAME)
+                .getCollection(COLLECTION_NAME, Message.class)
+                .find()
                 .collect().asList()
                 .onItem().invoke(messages -> logger.info(messages.size() + " messages fetched in " + (System.currentTimeMillis() - start) + "ms"));
     }
